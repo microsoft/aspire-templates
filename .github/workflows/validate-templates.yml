@@ -1,0 +1,96 @@
+name: Validate templates
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: template-validation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.cases.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: 10.0.x
+      - run: dotnet run --file eng/validate-templates.cs --verbosity quiet
+      - run: dotnet test tests/Aspire.Templates.EndToEnd.Tests --filter TestCategory=Harness
+      - id: cases
+        run: |
+          matrix=$(dotnet run --file eng/discover-e2e.cs --verbosity quiet)
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+
+  validate:
+    needs: discover
+    name: ${{ matrix.template }} / ${{ matrix.channel }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.discover.outputs.matrix) }}
+    env:
+      ASPIRE_E2E_CHANNEL: ${{ matrix.channel }}
+      TEMPLATE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      ASPIRE_E2E_IMAGE: aspire-template-validation
+      ASPIRE_E2E_TEST: ${{ matrix.test }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: 10.0.x
+      - name: Verify the template source revision
+        run: |
+          test "$(git rev-parse HEAD)" = "$TEMPLATE_SHA"
+          mkdir -p TestResults
+          printf '%s\n' "$TEMPLATE_SHA" > TestResults/template-source-revision.txt
+      - name: Build Docker-in-Docker test image
+        run: docker build --tag "$ASPIRE_E2E_IMAGE" tests/Docker
+      - name: Check terminal automation failure detection
+        if: matrix.template == 'aspire-empty'
+        run: >-
+          dotnet test tests/Aspire.Templates.EndToEnd.Tests
+          --filter TestCategory=TerminalHarness
+          --logger "trx;LogFileName=terminal-harness.trx"
+          --results-directory TestResults
+      - name: Validate selected template
+        run: |
+          dotnet test tests/Aspire.Templates.EndToEnd.Tests \
+            --filter "FullyQualifiedName=$ASPIRE_E2E_TEST" \
+            --logger "trx;LogFileName=results.trx" \
+            --results-directory TestResults
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          counters = ET.parse("TestResults/results.trx").find(
+              ".//{http://microsoft.com/schemas/VisualStudio/TeamTest/2010}Counters")
+          assert counters is not None and counters.get("total") == "1" and counters.get("passed") == "1", \
+              "The matrix entry must execute exactly one passing test."
+          PY
+      - name: Upload results and terminal recordings
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: template-${{ matrix.template }}-${{ matrix.channel }}
+          path: |
+            TestResults/*.trx
+            TestResults/template-source-revision.txt
+            TestResults/**/terminal.cast
+            TestResults/**/diagnostics/**
+          if-no-files-found: warn

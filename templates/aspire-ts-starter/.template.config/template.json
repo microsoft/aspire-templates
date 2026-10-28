@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json.schemastore.org/template",
+  "author": "Microsoft",
+  "identity": "Aspire.TemplatesLab.Starter.TypeScript",
+  "name": "Aspire Starter App (Express/React, TypeScript AppHost)",
+  "description": "An Aspire TypeScript AppHost with an Express API and React frontend.",
+  "shortName": "aspire-ts-starter",
+  "defaultName": "AspireApp",
+  "classifications": ["Aspire", "TypeScript", "Express", "React"],
+  "tags": {
+    "language": "TypeScript",
+    "type": "project"
+  },
+  "symbols": {
+    "projectNameLower": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "lowerCaseInvariant",
+      "replaces": "{{projectNameLower}}"
+    },
+    "AspireVersion": {
+      "type": "parameter",
+      "datatype": "string",
+      "isRequired": true,
+      "description": "SDK version supplied by the running Aspire CLI.",
+      "replaces": "{{aspireVersion}}"
+    },
+    "HostingJavaScriptVersion": {
+      "type": "parameter",
+      "datatype": "string",
+      "isRequired": true,
+      "description": "The version of Aspire.Hosting.JavaScript.",
+      "replaces": "{{hostingJavaScriptVersion}}"
+    },
+    "LocalhostTld": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Use the lowercased project name with .dev.localhost instead of localhost."
+    },
+    "httpPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": { "low": 15000, "high": 15299 },
+      "replaces": "{{httpPort}}"
+    },
+    "httpsPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": { "low": 17000, "high": 17299 },
+      "replaces": "{{httpsPort}}"
+    },
+    "otlpHttpPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": { "low": 19000, "high": 19299 },
+      "replaces": "{{otlpHttpPort}}"
+    },
+    "otlpHttpsPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": { "low": 21000, "high": 21299 },
+      "replaces": "{{otlpHttpsPort}}"
+    },
+    "resourceHttpPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": { "low": 20000, "high": 20299 },
+      "replaces": "{{resourceHttpPort}}"
+    },
+    "resourceHttpsPort": {
+      "type": "generated",
+      "generator": "port",
+      "parameters": { "low": 22000, "high": 22299 },
+      "replaces": "{{resourceHttpsPort}}"
+    }
+  },
+  "primaryOutputs": [
+    { "path": "apphost.mts" }
+  ]
+}

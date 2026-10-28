@@ -1,0 +1,47 @@
+{
+  "appHost": {
+    "path": "apphost.mts",
+    "language": "typescript/nodejs"
+  },
+  "sdk": {
+    "version": "{{aspireVersion}}"
+  },
+  "packages": {
+    "Aspire.Hosting.JavaScript": "{{hostingJavaScriptVersion}}"
+  },
+  "profiles": {
+    "https": {
+      //#if (LocalhostTld)
+      "applicationUrl": "https://{{projectNameLower}}.dev.localhost:{{httpsPort}};http://{{projectNameLower}}.dev.localhost:{{httpPort}}",
+      //#else
+      "applicationUrl": "https://localhost:{{httpsPort}};http://localhost:{{httpPort}}",
+      //#endif
+      "environmentVariables": {
+        //#if (LocalhostTld)
+        "ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL": "https://{{projectNameLower}}.dev.localhost:{{otlpHttpsPort}}",
+        "ASPIRE_RESOURCE_SERVICE_ENDPOINT_URL": "https://{{projectNameLower}}.dev.localhost:{{resourceHttpsPort}}"
+        //#else
+        "ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL": "https://localhost:{{otlpHttpsPort}}",
+        "ASPIRE_RESOURCE_SERVICE_ENDPOINT_URL": "https://localhost:{{resourceHttpsPort}}"
+        //#endif
+      }
+    },
+    "http": {
+      //#if (LocalhostTld)
+      "applicationUrl": "http://{{projectNameLower}}.dev.localhost:{{httpPort}}",
+      //#else
+      "applicationUrl": "http://localhost:{{httpPort}}",
+      //#endif
+      "environmentVariables": {
+        //#if (LocalhostTld)
+        "ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL": "http://{{projectNameLower}}.dev.localhost:{{otlpHttpPort}}",
+        "ASPIRE_RESOURCE_SERVICE_ENDPOINT_URL": "http://{{projectNameLower}}.dev.localhost:{{resourceHttpPort}}",
+        //#else
+        "ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL": "http://localhost:{{otlpHttpPort}}",
+        "ASPIRE_RESOURCE_SERVICE_ENDPOINT_URL": "http://localhost:{{resourceHttpPort}}",
+        //#endif
+        "ASPIRE_ALLOW_UNSECURED_TRANSPORT": "true"
+      }
+    }
+  }
+}

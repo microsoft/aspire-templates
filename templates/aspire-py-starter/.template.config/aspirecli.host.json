@@ -1,0 +1,35 @@
+{
+  "createNuGetConfig": true,
+  "symbolInfo": {
+    "AspireVersion": { "isHidden": true },
+    "HostingJavaScriptVersion": {
+      "isHidden": true,
+      "valueSource": {
+        "kind": "nugetPackageVersion",
+        "packageId": "Aspire.Hosting.JavaScript",
+        "versionRange": "*-*",
+        "allowPrerelease": true
+      }
+    },
+    "HostingPythonVersion": {
+      "isHidden": true,
+      "valueSource": {
+        "kind": "nugetPackageVersion",
+        "packageId": "Aspire.Hosting.Python",
+        "versionRange": "*-*",
+        "allowPrerelease": true
+      }
+    },
+    "HostingRedisVersion": {
+      "isHidden": true,
+      "valueSource": {
+        "kind": "nugetPackageVersion",
+        "packageId": "Aspire.Hosting.Redis",
+        "versionRange": "*-*",
+        "allowPrerelease": true
+      }
+    },
+    "UseRedisCache": { "displayName": "Use Redis for caching" },
+    "LocalhostTld": { "displayName": "Use .dev.localhost URLs" }
+  }
+}
