@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+case "${ASPIRE_E2E_CHANNEL:?}" in
+    stable) quality=release ;;
+    daily) quality=dev ;;
+    *) echo "Unsupported CLI channel: $ASPIRE_E2E_CHANNEL" >&2; exit 1 ;;
+esac
+curl -fsSL https://aspire.dev/install.sh -o /workspace/diagnostics/install-aspire.sh
+bash /workspace/diagnostics/install-aspire.sh --quality "$quality" --skip-path
+aspire --version | tee /workspace/diagnostics/cli-version.txt

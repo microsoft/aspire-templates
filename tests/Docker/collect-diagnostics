@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+mkdir -p /workspace/diagnostics
+# Exported artifacts must be readable by the non-root host runner, even on failure.
+trap 'chmod -R a+rX /workspace/diagnostics' EXIT
+if [[ -d /root/.aspire/logs ]]; then
+    mkdir -p /workspace/diagnostics/cli-logs
+    cp -R /root/.aspire/logs/. /workspace/diagnostics/cli-logs/
+fi
+docker ps -a > /workspace/diagnostics/containers.txt
+docker info > /workspace/diagnostics/docker-info.txt
+while IFS= read -r container; do
+    docker logs --tail 200 "$container" > "/workspace/diagnostics/container-$container.log" 2>&1
+done < <(docker ps -aq)
+if [[ $# -gt 0 ]]; then
+    status=0
+    timeout 20 aspire describe --apphost "$1" --format Json --non-interactive \
+        > /workspace/diagnostics/resources.json 2>&1 || status=$?
+    timeout 20 aspire logs --apphost "$1" --format Json --tail 200 --non-interactive \
+        > /workspace/diagnostics/resource-logs.json 2>&1 || status=$?
+    if [[ "$status" -ne 0 ]]; then
+        echo "App diagnostic collection failed (exit $status); see diagnostics files." >&2
+        exit "$status"
+    fi
+fi

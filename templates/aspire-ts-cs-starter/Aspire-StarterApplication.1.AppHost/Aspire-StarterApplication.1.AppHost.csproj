@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AspireUseCliBundle>true</AspireUseCliBundle>
+    <UserSecretsId>98048c9c-bf28-46ba-a98e-63767ee5e3a8</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="HostingAppHostPackageVersion" />
+    <PackageReference Include="Aspire.Hosting.Dotnet" Version="HostingDotnetPackageVersion" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.JavaScript" Version="HostingJavaScriptPackageVersion" />
+  <!--#if (UseRedisCache) -->
+    <PackageReference Include="Aspire.Hosting.Redis" Version="HostingRedisPackageVersion" />
+  <!--#endif -->
+  </ItemGroup>
+</Project>

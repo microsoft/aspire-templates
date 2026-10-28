@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+apphost="${1:?AppHost path required}"
+if [[ "$apphost" == *.mts ]]; then
+    npm ci
+    npm run build
+elif [[ "$apphost" == *.cs ]]; then
+    dotnet build "$apphost" --nologo
+else
+    while IFS= read -r -d '' project; do
+        dotnet build "$project" --nologo
+    done < <(find . -name '*.csproj' -not -path '*/obj/*' -print0)
+fi
+if [[ -f frontend/package-lock.json ]]; then
+    (cd frontend && npm ci && npm run build)
+fi
+if [[ -f api/package.json ]]; then
+    (cd api && npm install && npm run --if-present build)
+fi
+if [[ -f app/pyproject.toml ]]; then
+    (cd app && uv sync && uv run python -m compileall -q -x '/\.venv/' .)
+fi

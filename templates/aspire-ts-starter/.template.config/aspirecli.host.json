@@ -1,0 +1,16 @@
+{
+  "createNuGetConfig": true,
+  "symbolInfo": {
+    "AspireVersion": { "isHidden": true },
+    "HostingJavaScriptVersion": {
+      "isHidden": true,
+      "valueSource": {
+        "kind": "nugetPackageVersion",
+        "packageId": "Aspire.Hosting.JavaScript",
+        "versionRange": "*-*",
+        "allowPrerelease": true
+      }
+    },
+    "LocalhostTld": { "displayName": "Use .dev.localhost URLs" }
+  }
+}

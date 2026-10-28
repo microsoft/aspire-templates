@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+import json
+from pathlib import Path
+import re
+import sys
+import xml.etree.ElementTree as ET
+
+root = Path(sys.argv[1])
+apphost = sys.argv[2]
+assert (root / apphost).is_file(), f"Missing AppHost: {apphost}"
+assert not (root / ".template.config").exists(), "Template metadata leaked into output"
+config = json.loads((root / "aspire.config.json").read_text())
+assert config["appHost"]["path"] == apphost
+for file in root.rglob("*"):
+    if not file.is_file() or file.suffix in {".png", ".ico"}:
+        continue
+    text = file.read_text(encoding="utf-8-sig")
+    assert not re.search(r"!!REPLACE_WITH_|\b\w+PackageVersion\b|\{\{(?:aspire|hosting|projectName|.*Port)", text), file
+    if file.suffix == ".csproj":
+        for package in ET.fromstring(text).iter("PackageReference"):
+            assert re.match(r"^\d+\.\d+", package.attrib["Version"]), file
+if apphost.endswith(".mts"):
+    assert re.match(r"^\d+\.\d+", config["sdk"]["version"])
+    assert all(re.match(r"^\d+\.\d+", version) for version in config["packages"].values())
+print("Generated AppHost and version substitutions are valid.")
