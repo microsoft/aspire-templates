@@ -38,8 +38,9 @@ Require(happy.Id == duplicate.Id, "Same idempotency key created a second order."
 var queueConnection = Environment.GetEnvironmentVariable("COMMERCE_TEST_QUEUES");
 var testQueue = string.IsNullOrEmpty(queueConnection) ? null : new QueueServiceClient(queueConnection,
     new QueueClientOptions { MessageEncoding = QueueMessageEncoding.Base64 }).GetQueueClient("payments");
+var initialDetail = await client.GetFromJsonAsync<OrderDetail>($"/api/orders/{happy.Id}", token) ?? throw new Exception("No initial history.");
 var replay = JsonSerializer.Serialize(new WorkMessage(Guid.NewGuid(), happy.Id, 1,
-    $"00-{happy.TraceId}-0123456789abcdef-01", null), new JsonSerializerOptions(JsonSerializerDefaults.Web));
+    $"00-{happy.TraceId}-{initialDetail.Events[0].SpanId}-01", null), new JsonSerializerOptions(JsonSerializerDefaults.Web));
 if (testQueue is not null)
 {
     await testQueue.SendMessageAsync(replay, cancellationToken: token);

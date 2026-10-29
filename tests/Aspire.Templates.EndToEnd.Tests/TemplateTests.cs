@@ -47,6 +47,10 @@ public sealed class TemplateTests
             await terminal.RunAsync("cd /tmp/template-app");
             await terminal.RunAsync($"aspire restore --apphost {TemplateTerminal.Quote(appHost)} --non-interactive");
             await terminal.RunAsync($"build-template {TemplateTerminal.Quote(appHost)}");
+            if (template == "aspire-e2e-commerce")
+            {
+                await terminal.RunAsync("dotnet publish LabApp.Storefront/LabApp.Storefront.csproj --no-restore --nologo -o /tmp/commerce-publish && test -f /tmp/commerce-publish/wwwroot/index.html");
+            }
             startAttempted = true;
             await terminal.RunAsync(
                 $"aspire start --apphost {TemplateTerminal.Quote(appHost)} --isolated --non-interactive --format Json");

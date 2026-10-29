@@ -9,12 +9,11 @@
   <ItemGroup>
     <FrontendSource Include="../frontend/src/**/*;../frontend/tsconfig.json;../frontend/vite.config.ts" />
   </ItemGroup>
-  <Target Name="IncludeFrontend" BeforeTargets="ComputeFilesToPublish" DependsOnTargets="BuildFrontend">
+  <Target Name="IncludeFrontend" BeforeTargets="AssignTargetPaths" DependsOnTargets="BuildFrontend">
     <ItemGroup>
-      <ResolvedFileToPublish Include="wwwroot/**/*" Exclude="@(ResolvedFileToPublish)">
-        <RelativePath>%(Identity)</RelativePath>
+      <Content Include="wwwroot/**/*" Exclude="@(Content)">
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      </ResolvedFileToPublish>
+      </Content>
     </ItemGroup>
   </Target>
 </Project>
