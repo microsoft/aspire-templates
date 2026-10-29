@@ -12,7 +12,7 @@ var templates = Path.Combine(root, "templates");
 string[] names =
 [
     "aspire-starter", "aspire-ts-cs-starter", "aspire-ts-starter",
-    "aspire-py-starter", "aspire-empty", "aspire-apphost-singlefile"
+    "aspire-py-starter", "aspire-empty", "aspire-apphost-singlefile", "aspire-e2e-media"
 ];
 const string sdkVersion = "17.0.0-test.1";
 var unresolved = new Regex(
@@ -25,7 +25,10 @@ var checks = new List<(string Name, Action Run)> { ("metadata", CheckMetadata) }
 foreach (var name in names)
 {
     checks.Add(($"{name}: defaults", () => CheckDefaults(name)));
-    checks.Add(($"{name}: Redis and .dev.localhost", () => CheckOptions(name)));
+    if (name != "aspire-e2e-media")
+    {
+        checks.Add(($"{name}: Redis and .dev.localhost", () => CheckOptions(name)));
+    }
 }
 foreach (var name in new[] { "aspire-starter", "aspire-ts-cs-starter", "aspire-empty", "aspire-apphost-singlefile" })
 {
@@ -102,6 +105,19 @@ void CheckMetadata()
 void CheckDefaults(string name)
 {
     var output = Render(name, "default");
+    if (name == "aspire-e2e-media")
+    {
+        Require(File.Exists(Path.Combine(output, "LabDemo.AppHost", "LabDemo.AppHost.csproj")), "Missing renamed media AppHost.");
+        Require(File.Exists(Path.Combine(output, "LabDemo.Worker", "Processor.cs")), "Missing media processor.");
+        Require(File.Exists(Path.Combine(output, "tests", "business_flow.py")), "Missing media business assertions.");
+        var host = File.ReadAllText(Path.Combine(output, "LabDemo.AppHost", "AppHost.cs"));
+        Require(host.Contains("PublishAsAzureContainerAppJob", StringComparison.Ordinal), "Missing deployed processing job.");
+        Require(host.Contains("PublishWithContainerFiles", StringComparison.Ordinal), "Missing production frontend.");
+        foreach (var file in Directory.EnumerateFiles(output, "*", SearchOption.AllDirectories))
+        {
+            Require(!File.ReadAllText(file).Contains("MediaStudio", StringComparison.Ordinal), $"Unreplaced media name: {file}");
+        }
+    }
     if (name == "aspire-starter")
     {
         Require(!Directory.Exists(Path.Combine(output, "LabDemo.Tests")), "Default starter must not include tests.");

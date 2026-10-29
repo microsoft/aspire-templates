@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json.schemastore.org/template",
+  "author": "Microsoft",
+  "name": "Aspire End-to-End Media Processing Studio",
+  "description": "Upload images, track durable processing, inspect failures and retry. React, .NET, SQL and private Azure Storage; requires Docker locally.",
+  "classifications": ["Aspire", "Cloud", "Media", "React"],
+  "identity": "Aspire.TemplatesLab.EndToEnd.Media",
+  "shortName": "aspire-e2e-media",
+  "sourceName": "MediaStudio",
+  "preferNameDirectory": false,
+  "tags": { "language": "C#", "type": "solution" },
+  "sources": [{ "exclude": [".template.config/**", "**/bin/**", "**/obj/**", "**/node_modules/**", "**/dist/**", "**/.aspire/**", "**/*.tsbuildinfo"] }],
+  "symbols": {
+    "HostingAppHostVersion": { "type": "parameter", "datatype": "string", "isRequired": true, "replaces": "HostingAppHostPackageVersion" },
+    "HostingJavaScriptVersion": { "type": "parameter", "datatype": "string", "isRequired": true, "replaces": "HostingJavaScriptPackageVersion" },
+    "HostingStorageVersion": { "type": "parameter", "datatype": "string", "isRequired": true, "replaces": "HostingStoragePackageVersion" },
+    "HostingSqlVersion": { "type": "parameter", "datatype": "string", "isRequired": true, "replaces": "HostingSqlPackageVersion" },
+    "HostingAppContainersVersion": { "type": "parameter", "datatype": "string", "isRequired": true, "replaces": "HostingAppContainersPackageVersion" },
+    "BlobVersion": { "type": "parameter", "datatype": "string", "isRequired": true, "replaces": "BlobPackageVersion" },
+    "QueueVersion": { "type": "parameter", "datatype": "string", "isRequired": true, "replaces": "QueuePackageVersion" },
+    "SqlVersion": { "type": "parameter", "datatype": "string", "isRequired": true, "replaces": "SqlPackageVersion" },
+    "dashboardPort": { "type": "generated", "generator": "port", "parameters": { "low": 15000, "high": 15999 }, "replaces": "15861" },
+    "otlpPort": { "type": "generated", "generator": "port", "parameters": { "low": 19000, "high": 19999 }, "replaces": "19861" },
+    "resourcePort": { "type": "generated", "generator": "port", "parameters": { "low": 20000, "high": 20999 }, "replaces": "20861" }
+  },
+  "primaryOutputs": [{ "path": "MediaStudio.AppHost/MediaStudio.AppHost.csproj" }]
+}

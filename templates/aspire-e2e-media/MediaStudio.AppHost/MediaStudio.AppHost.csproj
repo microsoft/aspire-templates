@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AspireUseCliBundle>true</AspireUseCliBundle>
+    <UserSecretsId>media-studio-c93a210e</UserSecretsId>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="HostingAppHostPackageVersion" />
+    <PackageReference Include="Aspire.Hosting.Azure.Storage" Version="HostingStoragePackageVersion" />
+    <PackageReference Include="Aspire.Hosting.Azure.Sql" Version="HostingSqlPackageVersion" />
+    <PackageReference Include="Aspire.Hosting.Azure.AppContainers" Version="HostingAppContainersPackageVersion" />
+    <PackageReference Include="Aspire.Hosting.JavaScript" Version="HostingJavaScriptPackageVersion" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../MediaStudio.Api/MediaStudio.Api.csproj" />
+    <ProjectReference Include="../MediaStudio.Worker/MediaStudio.Worker.csproj" />
+  </ItemGroup>
+</Project>

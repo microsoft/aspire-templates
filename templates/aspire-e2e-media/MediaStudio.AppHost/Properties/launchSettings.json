@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "applicationUrl": "http://localhost:15861",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPIRE_ALLOW_UNSECURED_TRANSPORT": "true",
+        "ASPIRE_DASHBOARD_OTLP_HTTP_ENDPOINT_URL": "http://localhost:19861",
+        "ASPIRE_RESOURCE_SERVICE_ENDPOINT_URL": "http://localhost:20861"
+      }
+    }
+  }
+}

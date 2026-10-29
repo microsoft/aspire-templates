@@ -30,6 +30,9 @@ public sealed class TemplateTests
     [TestMethod]
     public Task aspire_apphost_singlefile() => ValidateAsync("aspire-apphost-singlefile", "apphost.cs", []);
 
+    [TestMethod]
+    public Task aspire_e2e_media() => ValidateAsync("aspire-e2e-media", "LabApp.AppHost/LabApp.AppHost.csproj", ["api", "worker", "frontend"]);
+
     private async Task ValidateAsync(string template, string appHost, string[] resources)
     {
         await using var terminal = await TemplateTerminal.StartAsync(TestContext, template);
@@ -53,6 +56,25 @@ public sealed class TemplateTests
                     $"aspire wait {resource} --apphost {TemplateTerminal.Quote(appHost)} --status healthy --timeout 180 --non-interactive");
             }
             await terminal.RunAsync($"aspire describe --apphost {TemplateTerminal.Quote(appHost)} --format Json");
+            if (template == "aspire-e2e-media")
+            {
+                await terminal.RunAsync(
+                    $"aspire describe --apphost {TemplateTerminal.Quote(appHost)} --format Json > /tmp/media-resources.json");
+                await terminal.RunAsync("python3 tests/validate_running.py /tmp/media-resources.json --save /tmp/media-completed.json");
+                await terminal.RunAsync($"aspire resource worker stop --apphost {TemplateTerminal.Quote(appHost)} --non-interactive");
+                await terminal.RunAsync("python3 tests/validate_running.py /tmp/media-resources.json --enqueue-only --save /tmp/media-pending.json");
+                await terminal.RunAsync($"aspire stop --apphost {TemplateTerminal.Quote(appHost)} --non-interactive");
+                await terminal.RunAsync($"aspire start --apphost {TemplateTerminal.Quote(appHost)} --isolated --non-interactive --format Json");
+                foreach (var resource in resources)
+                {
+                    await terminal.RunAsync(
+                        $"aspire wait {resource} --apphost {TemplateTerminal.Quote(appHost)} --status healthy --timeout 180 --non-interactive");
+                }
+                await terminal.RunAsync(
+                    $"aspire describe --apphost {TemplateTerminal.Quote(appHost)} --format Json > /tmp/media-resources.json");
+                await terminal.RunAsync("python3 tests/validate_running.py /tmp/media-resources.json --verify /tmp/media-completed.json");
+                await terminal.RunAsync("python3 tests/validate_running.py /tmp/media-resources.json --verify /tmp/media-pending.json");
+            }
         }
         catch
         {

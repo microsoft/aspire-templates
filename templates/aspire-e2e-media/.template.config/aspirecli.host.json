@@ -1,0 +1,13 @@
+{
+  "createNuGetConfig": true,
+  "symbolInfo": {
+    "HostingAppHostVersion": { "isHidden": true, "valueSource": { "kind": "nugetPackageVersion", "packageId": "Aspire.Hosting.AppHost", "versionRange": "*-*", "allowPrerelease": true } },
+    "HostingJavaScriptVersion": { "isHidden": true, "valueSource": { "kind": "nugetPackageVersion", "packageId": "Aspire.Hosting.JavaScript", "versionRange": "*-*", "allowPrerelease": true } },
+    "HostingStorageVersion": { "isHidden": true, "valueSource": { "kind": "nugetPackageVersion", "packageId": "Aspire.Hosting.Azure.Storage", "versionRange": "*-*", "allowPrerelease": true } },
+    "HostingSqlVersion": { "isHidden": true, "valueSource": { "kind": "nugetPackageVersion", "packageId": "Aspire.Hosting.Azure.Sql", "versionRange": "*-*", "allowPrerelease": true } },
+    "HostingAppContainersVersion": { "isHidden": true, "valueSource": { "kind": "nugetPackageVersion", "packageId": "Aspire.Hosting.Azure.AppContainers", "versionRange": "*-*", "allowPrerelease": true } },
+    "BlobVersion": { "isHidden": true, "valueSource": { "kind": "nugetPackageVersion", "packageId": "Aspire.Azure.Storage.Blobs", "versionRange": "*-*", "allowPrerelease": true } },
+    "QueueVersion": { "isHidden": true, "valueSource": { "kind": "nugetPackageVersion", "packageId": "Aspire.Azure.Storage.Queues", "versionRange": "*-*", "allowPrerelease": true } },
+    "SqlVersion": { "isHidden": true, "valueSource": { "kind": "nugetPackageVersion", "packageId": "Aspire.Microsoft.EntityFrameworkCore.SqlServer", "versionRange": "*-*", "allowPrerelease": true } }
+  }
+}
