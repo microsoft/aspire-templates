@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="CommerceDemo.AppHost/CommerceDemo.AppHost.csproj" />
+  <Project Path="CommerceDemo.Core/CommerceDemo.Core.csproj" />
+  <Project Path="CommerceDemo.Storefront/CommerceDemo.Storefront.csproj" />
+  <Project Path="CommerceDemo.Worker/CommerceDemo.Worker.csproj" />
+  <Project Path="CommerceDemo.Tests/CommerceDemo.Tests.csproj" />
+</Solution>

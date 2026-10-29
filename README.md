@@ -23,6 +23,7 @@ engine source:
 | `aspire-py-starter` | TypeScript | Python FastAPI backend and React frontend |
 | `aspire-empty` | C# | Empty project-based AppHost and service defaults |
 | `aspire-apphost-singlefile` | C# | Empty file-based AppHost |
+| `aspire-e2e-commerce` | C# | React/Three.js commerce district, durable .NET business workers, PostgreSQL and Azure queues |
 
 The React/C# template retains its upstream name, `aspire-ts-cs-starter`.
 Standalone testing and service-defaults templates are not included. The Blazor
@@ -53,6 +54,7 @@ aspire new --template-path ./templates/aspire-ts-starter
 aspire new --template-path ./templates/aspire-py-starter
 aspire new --template-path ./templates/aspire-empty
 aspire new --template-path ./templates/aspire-apphost-singlefile
+aspire new --template-path ./templates/aspire-e2e-commerce
 ```
 
 For unattended generation:
@@ -117,6 +119,11 @@ how versions, source revisions, and generated content are bound together.
 
 ## Upstream baseline
 
+`aspire-e2e-commerce` is original source authored in this repository, following
+the maintained C# AppHost/host-metadata conventions. See its
+[guide](templates/aspire-e2e-commerce/README.md) for the architecture, simulated
+payment/recovery scenarios, business-flow checks, and managed Azure deployment.
+
 Imported from [microsoft/aspire at
 `8cc1c3e68fd0173dd403692d9930b7f3adf4db99`](https://github.com/microsoft/aspire/tree/8cc1c3e68fd0173dd403692d9930b7f3adf4db99):
 
@@ -172,7 +179,7 @@ dotnet run --file eng/discover-e2e.cs --verbosity quiet
 
 ## End-to-end validation
 
-The `Validate templates` workflow discovers all six templates and creates one job
+The `Validate templates` workflow discovers all seven templates and creates one job
 per template using the latest daily CLI. Each job installs
 the CLI, checks out the PR's **head repository and full commit SHA**, verifies that
 revision, and gives `aspire new` a read-only mount of its template source. It then
@@ -201,7 +208,7 @@ docker build --tag aspire-template-validation tests/Docker
 # Fast harness/discovery checks; no Docker container or CLI installation.
 dotnet test tests/Aspire.Templates.EndToEnd.Tests --filter TestCategory=Harness
 
-# All six templates, using the current working tree and latest daily CLI.
+# All seven templates, using the current working tree and latest daily CLI.
 dotnet test tests/Aspire.Templates.EndToEnd.Tests --filter TestCategory=E2E
 
 # A single case with the latest daily CLI.

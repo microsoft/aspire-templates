@@ -12,7 +12,7 @@ var templates = Path.Combine(root, "templates");
 string[] names =
 [
     "aspire-starter", "aspire-ts-cs-starter", "aspire-ts-starter",
-    "aspire-py-starter", "aspire-empty", "aspire-apphost-singlefile"
+    "aspire-py-starter", "aspire-empty", "aspire-apphost-singlefile", "aspire-e2e-commerce"
 ];
 const string sdkVersion = "17.0.0-test.1";
 var unresolved = new Regex(
@@ -25,7 +25,8 @@ var checks = new List<(string Name, Action Run)> { ("metadata", CheckMetadata) }
 foreach (var name in names)
 {
     checks.Add(($"{name}: defaults", () => CheckDefaults(name)));
-    checks.Add(($"{name}: Redis and .dev.localhost", () => CheckOptions(name)));
+    if (name != "aspire-e2e-commerce")
+        checks.Add(($"{name}: Redis and .dev.localhost", () => CheckOptions(name)));
 }
 foreach (var name in new[] { "aspire-starter", "aspire-ts-cs-starter", "aspire-empty", "aspire-apphost-singlefile" })
 {
@@ -112,6 +113,28 @@ void CheckDefaults(string name)
             "Default Python app must not include Redis.");
         Require(!File.ReadAllText(Path.Combine(output, "apphost.mts")).Contains("addRedis", StringComparison.Ordinal),
             "Default Python AppHost must not include Redis.");
+    }
+    if (name == "aspire-e2e-commerce")
+    {
+        Require(File.Exists(Path.Combine(output, "LabDemo.Storefront", "LabDemo.Storefront.csproj")), "Missing storefront.");
+        Require(File.Exists(Path.Combine(output, "LabDemo.Worker", "LabDemo.Worker.csproj")), "Missing commerce worker.");
+        Require(File.Exists(Path.Combine(output, "LabDemo.Tests", "Program.cs")), "Missing executable business-flow tests.");
+        var appHost = File.ReadAllText(Path.Combine(output, "LabDemo.AppHost", "AppHost.cs"));
+        foreach (var role in new[] { "payments", "fulfilment", "shipping" })
+            Require(appHost.Contains($"\"{role}\"", StringComparison.Ordinal), $"Missing {role} worker.");
+        Require(!File.ReadAllText(Path.Combine(output, "LabDemo.AppHost", "LabDemo.AppHost.csproj"))
+            .Contains("c549bc67-6db4-4a46-92a5-777c064d73ea", StringComparison.OrdinalIgnoreCase), "Shared UserSecretsId leaked.");
+        Require(Directory.EnumerateFiles(output, "*", SearchOption.AllDirectories)
+            .All(file => !File.ReadAllText(file).Contains("CommerceDemo", StringComparison.Ordinal)), "Commerce source name leaked.");
+        var second = Render(name, "second");
+        string Secret(string directory) => XDocument.Load(Path.Combine(directory, "LabDemo.AppHost", "LabDemo.AppHost.csproj"))
+            .Descendants("UserSecretsId").Single().Value;
+        Require(Secret(output) != Secret(second), "Independent consumers must have distinct secret stores.");
+        var profiles = ReadJson(Path.Combine(output, LaunchFile(name)))["profiles"]!;
+        var http = profiles["http"]!;
+        var ports = new[] { Text(http["applicationUrl"]), Text(http["environmentVariables"]!["ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL"]),
+            Text(http["environmentVariables"]!["ASPIRE_RESOURCE_SERVICE_ENDPOINT_URL"]) }.Select(url => new Uri(url).Port).ToArray();
+        Require(ports.Distinct().Count() == 3 && ports.All(port => port is >= 15000 and < 21000), "Invalid commerce ports.");
     }
 }
 

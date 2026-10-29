@@ -1,0 +1,12 @@
+{
+  "createNuGetConfig": true,
+  "symbolInfo": {
+    "HostingAppHostVersion": { "isHidden": true, "valueSource": { "kind": "nugetPackageVersion", "packageId": "Aspire.Hosting.AppHost", "versionRange": "*-*", "allowPrerelease": true } },
+    "HostingDotnetVersion": { "isHidden": true, "valueSource": { "kind": "nugetPackageVersion", "packageId": "Aspire.Hosting.Dotnet", "versionRange": "*-*", "allowPrerelease": true } },
+    "HostingStorageVersion": { "isHidden": true, "valueSource": { "kind": "nugetPackageVersion", "packageId": "Aspire.Hosting.Azure.Storage", "versionRange": "*-*", "allowPrerelease": true } },
+    "HostingPostgresVersion": { "isHidden": true, "valueSource": { "kind": "nugetPackageVersion", "packageId": "Aspire.Hosting.Azure.PostgreSQL", "versionRange": "*-*", "allowPrerelease": true } },
+    "HostingContainerAppsVersion": { "isHidden": true, "valueSource": { "kind": "nugetPackageVersion", "packageId": "Aspire.Hosting.Azure.AppContainers", "versionRange": "*-*", "allowPrerelease": true } },
+    "ClientPostgresVersion": { "isHidden": true, "valueSource": { "kind": "nugetPackageVersion", "packageId": "Aspire.Azure.Npgsql", "versionRange": "*-*", "allowPrerelease": true } },
+    "ClientQueuesVersion": { "isHidden": true, "valueSource": { "kind": "nugetPackageVersion", "packageId": "Aspire.Azure.Storage.Queues", "versionRange": "*-*", "allowPrerelease": true } }
+  }
+}

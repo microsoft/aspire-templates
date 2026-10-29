@@ -30,6 +30,9 @@ public sealed class TemplateTests
     [TestMethod]
     public Task aspire_apphost_singlefile() => ValidateAsync("aspire-apphost-singlefile", "apphost.cs", []);
 
+    [TestMethod]
+    public Task aspire_e2e_commerce() => ValidateAsync("aspire-e2e-commerce", "LabApp.AppHost/LabApp.AppHost.csproj", ["storefront", "payments", "fulfilment", "shipping"]);
+
     private async Task ValidateAsync(string template, string appHost, string[] resources)
     {
         await using var terminal = await TemplateTerminal.StartAsync(TestContext, template);
@@ -53,6 +56,12 @@ public sealed class TemplateTests
                     $"aspire wait {resource} --apphost {TemplateTerminal.Quote(appHost)} --status healthy --timeout 180 --non-interactive");
             }
             await terminal.RunAsync($"aspire describe --apphost {TemplateTerminal.Quote(appHost)} --format Json");
+            if (template == "aspire-e2e-commerce")
+            {
+                await terminal.RunAsync("dotnet run --project LabApp.Tests --no-build");
+                await terminal.RunAsync($"aspire describe storefront --apphost {TemplateTerminal.Quote(appHost)} --format Json > /tmp/commerce-resource.json");
+                await terminal.RunAsync($"commerce-flow /tmp/commerce-resource.json {TemplateTerminal.Quote(appHost)}");
+            }
         }
         catch
         {

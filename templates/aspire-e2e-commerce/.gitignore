@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+**/node_modules/
+CommerceDemo.Storefront/wwwroot/
+.aspire/
+aspire-output/
+TestResults/
+**/test-results/
+**/playwright-report/
+*.user
+*.env

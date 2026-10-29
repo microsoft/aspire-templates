@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json.schemastore.org/template",
+  "author": "Microsoft",
+  "name": "Aspire End-to-End Commerce",
+  "description": "A live isometric commerce simulation with durable orders, mock payments, warehouse fulfilment, delivery and distributed traces. Requires Docker and Node.js 22+.",
+  "classifications": ["Aspire", "Cloud", "Web", "Commerce"],
+  "identity": "Aspire.TemplatesLab.E2E.Commerce.CSharp",
+  "shortName": "aspire-e2e-commerce",
+  "sourceName": "CommerceDemo",
+  "preferNameDirectory": true,
+  "tags": { "language": "C#", "type": "solution" },
+  "guids": ["c549bc67-6db4-4a46-92a5-777c064d73ea"],
+  "sources": [{
+    "exclude": ["**/[Bb]in/**", "**/[Oo]bj/**", "**/node_modules/**", "**/dist/**", "CommerceDemo.Storefront/wwwroot/**", ".template.config/**", ".aspire/**", "**/TestResults/**", "**/test-results/**", "**/playwright-report/**", "**/*.user"]
+  }],
+  "symbols": {
+    "HostingAppHostVersion": { "type": "parameter", "datatype": "string", "isRequired": true, "replaces": "HostingAppHostPackageVersion" },
+    "HostingDotnetVersion": { "type": "parameter", "datatype": "string", "isRequired": true, "replaces": "HostingDotnetPackageVersion" },
+    "HostingStorageVersion": { "type": "parameter", "datatype": "string", "isRequired": true, "replaces": "HostingStoragePackageVersion" },
+    "HostingPostgresVersion": { "type": "parameter", "datatype": "string", "isRequired": true, "replaces": "HostingPostgresPackageVersion" },
+    "HostingContainerAppsVersion": { "type": "parameter", "datatype": "string", "isRequired": true, "replaces": "HostingContainerAppsPackageVersion" },
+    "ClientPostgresVersion": { "type": "parameter", "datatype": "string", "isRequired": true, "replaces": "ClientPostgresPackageVersion" },
+    "ClientQueuesVersion": { "type": "parameter", "datatype": "string", "isRequired": true, "replaces": "ClientQueuesPackageVersion" },
+    "dashboardPort": { "type": "generated", "generator": "port", "parameters": { "low": 15000, "high": 15999 }, "replaces": "15861" },
+    "otlpPort": { "type": "generated", "generator": "port", "parameters": { "low": 19000, "high": 19999 }, "replaces": "19861" },
+    "resourcePort": { "type": "generated", "generator": "port", "parameters": { "low": 20000, "high": 20999 }, "replaces": "20861" }
+  },
+  "primaryOutputs": [{ "path": "CommerceDemo.AppHost/CommerceDemo.AppHost.csproj" }]
+}

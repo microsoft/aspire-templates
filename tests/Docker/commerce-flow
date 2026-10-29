@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+import urllib.request
+import uuid
+
+resource = json.loads(Path(sys.argv[1]).read_text())
+urls = [
+    endpoint["url"]
+    for item in resource["resources"]
+    if item["displayName"] == "storefront"
+    for endpoint in item["urls"]
+    if endpoint["name"] == "http"
+]
+assert len(urls) == 1, "Expected exactly one storefront HTTP endpoint"
+environment = os.environ.copy()
+storefront = next(item for item in resource["resources"] if item["displayName"] == "storefront")
+environment["COMMERCE_TEST_QUEUES"] = storefront["environment"]["ConnectionStrings__commerce-queues"]
+subprocess.run(
+    ["dotnet", "run", "--project", "LabApp.Tests", "--no-build", "--", "--base-url", urls[0]],
+    check=True,
+    timeout=180,
+    env=environment,
+)
+
+apphost = sys.argv[2]
+def lifecycle(*arguments):
+    subprocess.run(["aspire", *arguments, "--apphost", apphost, "--non-interactive"], check=True, timeout=180)
+
+def fetch(path, body=None):
+    request = urllib.request.Request(
+        urls[0] + path, data=json.dumps(body).encode() if body else None,
+        headers={"Content-Type": "application/json", "Idempotency-Key": str(uuid.uuid4())},
+    )
+    with urllib.request.urlopen(request, timeout=15) as response:
+        return json.load(response)
+
+def wait(order_id, status):
+    deadline = time.monotonic() + 90
+    while time.monotonic() < deadline:
+        result = fetch("/api/orders/" + order_id)
+        if result["order"]["status"] == status:
+            return result
+        time.sleep(0.5)
+    raise AssertionError(f"Order did not reach {status}")
+
+lifecycle("resource", "shipping", "stop")
+try:
+    pending = fetch("/api/orders", {"productId": "lamp", "quantity": 1, "customerId": "harbor-house", "mockOutcome": "approved"})
+    wait(pending["id"], "Packed")
+finally:
+    lifecycle("resource", "shipping", "start")
+lifecycle("wait", "shipping", "--status", "healthy", "--timeout", "120")
+recovered = wait(pending["id"], "Delivered")
+assert len(recovered["events"]) == 6, "Restart duplicated/lost a transition"
+assert sum(event["status"] == "Delivered" for event in recovered["events"]) == 1
+print("PASS shipping worker stopped with pending durable work and resumed to exactly one delivery")

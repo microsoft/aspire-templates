@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="../CommerceDemo.Core/CommerceDemo.Core.csproj" />
+  </ItemGroup>
+  <Target Name="BuildFrontend" BeforeTargets="BeforeBuild" Inputs="../frontend/package-lock.json;../frontend/package.json;../frontend/index.html;@(FrontendSource)" Outputs="wwwroot/index.html">
+    <Exec WorkingDirectory="../frontend" Command="npm ci --no-audit --no-fund" />
+    <Exec WorkingDirectory="../frontend" Command="npm run build" />
+  </Target>
+  <ItemGroup>
+    <FrontendSource Include="../frontend/src/**/*;../frontend/tsconfig.json;../frontend/vite.config.ts" />
+  </ItemGroup>
+  <Target Name="IncludeFrontend" BeforeTargets="ComputeFilesToPublish" DependsOnTargets="BuildFrontend">
+    <ItemGroup>
+      <ResolvedFileToPublish Include="wwwroot/**/*" Exclude="@(ResolvedFileToPublish)">
+        <RelativePath>%(Identity)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+</Project>

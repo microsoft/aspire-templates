@@ -18,8 +18,8 @@ ENV PATH="/root/.aspire/bin:/root/.local/bin:${PATH}" \
     ASPIRE_CLI_START_TIMEOUT=300 \
     TERM=xterm-256color
 
-COPY entrypoint.sh install-cli build-template validate-output collect-diagnostics /usr/local/bin/
+COPY entrypoint.sh install-cli build-template validate-output collect-diagnostics commerce-flow /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/install-cli /usr/local/bin/build-template \
-    /usr/local/bin/validate-output /usr/local/bin/collect-diagnostics
+    /usr/local/bin/validate-output /usr/local/bin/collect-diagnostics /usr/local/bin/commerce-flow
 WORKDIR /workspace
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
